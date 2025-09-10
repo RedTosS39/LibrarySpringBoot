@@ -15,9 +15,3 @@ Frontend: Thymeleaf, Bootstrap, HTML5, CSS3
 База данных: PostgreSQL
 
 Сборка: Maven
-
-Контейнеризация: Docker (опционально)
-
-🚀 Быстрый старт Предварительные требования Java 17 или выше Maven 3.6+ PostgreSQL 12+ Git
-
-git clone https://github.com/RedTosS39/library.git cd library
