@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр книги</title>
+    <style>
+        :root {
+            --pastel-blue: #d4e1ff;
+            --pastel-lavender: #e8d7ff;
+            --pastel-mint: #d7f0e9;
+            --pastel-peach: #ffdfd6;
+            --pastel-text: #5d5d5d;
+            --pastel-dark: #7a7a7a;
+            --pastel-shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            color: var(--pastel-text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            color: var(--pastel-dark);
+            font-weight: 500;
+            font-size: 2.2em;
+            margin: 0;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 5px 20px var(--pastel-shadow);
+            margin-bottom: 25px;
+            border: 1px solid rgba(212, 225, 255, 0.3);
+        }
+
+        .book-info {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            border-radius: 10px;
+            background: rgba(212, 225, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .info-row:hover {
+            background: rgba(212, 225, 255, 0.15);
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--pastel-dark);
+            min-width: 130px;
+            font-size: 15px;
+        }
+
+        .info-value {
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .owner-section {
+            background: rgba(232, 215, 255, 0.08);
+            padding: 25px;
+            border-radius: 14px;
+            margin: 25px 0;
+            border: 1px solid rgba(232, 215, 255, 0.2);
+        }
+
+        .owner-section h3 {
+            color: var(--pastel-dark);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+
+        .current-owner {
+            background: rgba(215, 240, 233, 0.1);
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(215, 240, 233, 0.2);
+        }
+
+        .owner-details {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .owner-details p {
+            margin: 5px 0;
+        }
+
+        .assign-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 225, 255, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--pastel-dark);
+            font-size: 15px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--pastel-lavender);
+            border-radius: 8px;
+            font-size: 15px;
+            background: white;
+            color: var(--pastel-text);
+            transition: all 0.2s ease;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--pastel-mint);
+            box-shadow: 0 0 0 3px rgba(215, 240, 233, 0.2);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--pastel-mint);
+            color: var(--pastel-dark);
+        }
+
+        .btn-primary:hover {
+            background: #c2e4da;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--pastel-peach);
+            color: var(--pastel-dark);
+        }
+
+        .btn-danger:hover {
+            background: #f5c9bb;
+            transform: translateY(-1px);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            padding: 13px;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .btn-edit {
+            background: var(--pastel-mint);
+            color: var(--pastel-dark);
+        }
+
+        .btn-delete {
+            background: var(--pastel-peach);
+            color: var(--pastel-dark);
+        }
+
+        .btn-back {
+            background: var(--pastel-blue);
+            color: var(--pastel-dark);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-owner {
+            color: var(--pastel-text);
+            font-style: italic;
+            padding: 18px;
+            text-align: center;
+            background: rgba(255, 223, 214, 0.1);
+            border-radius: 10px;
+            border: 1px dashed var(--pastel-peach);
+            margin-bottom: 18px;
+        }
+
+        .book-meta {
+            text-align: center;
+            color: var(--pastel-dark);
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .book-card {
+                padding: 25px;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .info-label {
+                min-width: auto;
+                font-weight: 600;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Минимальные анимации */
+        .book-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Убираем все эмодзи и иконки */
+        .btn::before,
+        .action-btn::before {
+            content: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Детали книги</h1>
+    </div>
+
+    <div th:if="${book != null}" class="book-card">
+        <div class="book-info">
+            <div class="info-row">
+                <span class="info-label">ID книги:</span>
+                <!--/*@thymesVar id="getBook" type=""*/-->
+                <span class="info-value" th:text="${book.getBook_id()}"></span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Название:</span>
+                <span class="info-value" th:text="${book.getTitle()}"></span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Автор:</span>
+                <span class="info-value" th:text="${book.getAuthor()}"></span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Год издания:</span>
+                <span class="info-value" th:text="${book.getYear()} ?: 'Не указан'"></span>
+            </div>
+        </div>
+
+        <div class="owner-section">
+            <h3>Информация о владельце</h3>
+
+            <div th:if="${owner != null}" class="current-owner">
+                <div class="owner-details">
+                    <p><strong>Текущий владелец:</strong>
+                        <span th:text="${owner.name} + ' (ID: ' + ${owner.person_id} + ')'"></span>
+                    </p>
+                    <p><strong>Возраст:</strong> <span th:text="${owner.age} + ' лет'"></span></p>
+                </div>
+
+                <form th:action="@{/books/{id}/release(id=${book.book_id})}" method="post">
+                    <input type="hidden" name="_method" value="patch" />
+                    <button type="submit" class="btn btn-danger">
+                        Освободить книгу
+                    </button>
+                </form>
+            </div>
+
+            <div th:if="${owner == null}" class="no-owner">
+                <p>Книга свободна - нет текущего владельца</p>
+            </div>
+
+            <div th:if="${owner == null and people != null}" class="assign-form">
+                <form th:action="@{/books/{id}/assign(id=${book.book_id})}" method="post">
+                    <input type="hidden" name="_method" value="patch" />
+
+                    <div class="form-group">
+                        <label for="ownerSelect">Назначить нового владельца:</label>
+                        <select id="ownerSelect" name="person" class="form-select" required>
+                            <option value="">-- Выберите пользователя --</option>
+                            <option th:each="p : ${people}"
+                                    th:value="${p.person_id}"
+                                    th:text="${p.name} + ' (ID: ' + ${p.person_id} + ', возраст: ' + ${p.age} + ')'">
+                            </option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        Назначить владельца
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a th:href="@{/books/{id}/edit-book(id=${book.book_id})}" class="action-btn btn-edit">
+                Редактировать
+            </a>
+
+            <form th:action="@{/books/{id}(id=${book.book_id})}" method="post"
+                  onsubmit="return confirm('Вы уверены, что хотите удалить эту книгу?')">
+                <input type="hidden" name="_method" value="DELETE"/>
+                <button type="submit" class="action-btn btn-delete">
+                    Удалить
+                </button>
+            </form>
+
+            <a th:href="@{/books}" class="action-btn btn-back">
+                Назад к каталогу
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${book == null}" class="book-card">
+        <div style="text-align: center; padding: 40px;">
+            <h2 style="color: var(--pastel-dark); margin-bottom: 15px;">Книга не найдена</h2>
+            <p style="color: var(--pastel-text); margin-bottom: 25px;">Запрошенная книга не существует или была удалена</p>
+            <a th:href="@{/books}" class="action-btn btn-back">
+                Вернуться к каталогу
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
